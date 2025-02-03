@@ -1,0 +1,7 @@
+---
+- name: Ver toda la información de la memoria
+  hosts: servidores_de_aplicaciones
+  tasks:
+    - name: Ver toda la información de la memoria
+      ansible.builtin.debug:
+        msg: "la información al completa de la memoria es {{ansible_facts.memory_mb}}"

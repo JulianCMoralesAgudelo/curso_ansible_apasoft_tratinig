@@ -1,0 +1,23 @@
+---
+- name: Prueba de variables
+  hosts: debian1
+  vars:
+    mensaje: "mensaje del :"
+    curso: "Curso de ansible apasoft"
+    entornos:
+      - desarrollo
+      - certificacion
+      - produccion
+
+  tasks:
+    - name: Ver variables - Lista completa
+      debug:
+        msg: "Entornos disponibles: {{ entornos }}"
+
+    - name: Ver variables - Primer elemento
+      debug:
+        msg: "Primer entorno: {{ entornos[0] }}"
+
+    - name: Ver variables - Slice de la lista
+      debug:
+        msg: "Lista parcial: {{ entornos[1:3] }}"

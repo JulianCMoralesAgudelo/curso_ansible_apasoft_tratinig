@@ -1,0 +1,39 @@
+---
+- name: Configuración de Entornos para Bases de Datos SQL Server
+  hosts: all
+  vars:
+    ambientes:
+      desarrollo:
+        tipo: "Linux"
+        memoria: "16GB"
+        cpu: "4 vCPU"
+        disco: "500GB"
+        sql_server_version: "2019"
+        ubicacion: "VM en cloud"
+      certificacion:
+        tipo: "Windows"
+        memoria: "32GB"
+        cpu: "8 vCPU"
+        disco: "1TB"
+        sql_server_version: "2019"
+        ubicacion: "Físico"
+      produccion:
+        tipo: "Linux"
+        memoria: "64GB"
+        cpu: "16 vCPU"
+        disco: "2TB"
+        sql_server_version: "2019"
+        ubicacion: "Data center"
+
+  tasks:
+    - name: Mostrar configuraciones de los entornos
+      debug:
+        msg: |
+          Ambiente: {{ item.key }}
+          Tipo: {{ item.value.tipo }}
+          Memoria: {{ item.value.memoria }}
+          CPU: {{ item.value.cpu }}
+          Disco: {{ item.value.disco }}
+          SQL Server Version: {{ item.value.sql_server_version }}
+          Ubicación: {{ item.value.ubicacion }}
+      loop: "{{ ambientes | dict2items }}"

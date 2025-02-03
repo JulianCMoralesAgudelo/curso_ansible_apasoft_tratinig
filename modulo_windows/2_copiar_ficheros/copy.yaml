@@ -1,0 +1,14 @@
+---
+- name: Trabajar con Windows
+  hosts: windows
+  tasks:
+    - name: Copiar un archivo local a Windows
+      win_copy:
+        src: fichero.txt
+        dest: C:\Users\admindb\Documents\parches\fichero.txt
+
+# Distinto metodo
+    - name: Crear un archivo con contenido en Windows
+      win_copy:
+        content: "Copiar archivo a Windows"
+        dest: C:\Users\admindb\Documents\parches\fichero2.txt

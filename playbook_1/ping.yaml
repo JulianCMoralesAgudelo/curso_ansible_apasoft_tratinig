@@ -1,0 +1,7 @@
+---
+- name: Primer play del curso
+  hosts: all
+
+  task:
+  - name: Hacer ping
+    ansible.builtin.ping:

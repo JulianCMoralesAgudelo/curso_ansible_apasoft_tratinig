@@ -1,0 +1,14 @@
+---
+- name: Trabajar con ficheros
+  hosts: debian
+
+  tasks:
+    - name: Crear un fichero vacio
+      file:
+        path: "/tmp/prueba.txt"
+        state: "touch"
+
+    - name: Borrar fichero vacio
+      file:
+        path: "/tmp/prueba.txt"
+        state: "absent"

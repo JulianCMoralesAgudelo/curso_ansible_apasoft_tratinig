@@ -1,0 +1,11 @@
+---
+- name: Instalar software desde inventario
+  hosts: debian
+  become: yes # Se requieren privilegios elevados para la instalación
+
+  tasks:
+    - name: Instalar el software
+      ansible.builtin.apt:
+        name: "{{ software }}"
+        state: present
+        update_cache: yes

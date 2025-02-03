@@ -1,0 +1,63 @@
+# 1- Hay que instalar y Arrancar el módulo Apache
+# 2- Arrancar el módulo Apache
+# 3- Hay que instalar MariaDB
+# 4- Hay que instalar los paquetes php
+# 5- Hay que instalar los paquetes php-mysql
+# 6- Hay que instalar los paquetes Libapache2-mod-php
+# 7- Hay que instalar el archivo phpinfo.php al directorio /var/www/html
+# 8- Reiniciar Apache para aplicar cambios de PHP
+
+---
+- name: Instalar LAMP
+  hosts: debian
+  become: yes
+  vars:
+    mariadb_root_password: "Password1"
+
+  tasks:
+    - name: Instalar Apache
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: true
+
+    - name: Arrancar y habilitar Apache
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Instalar MariaDB
+      ansible.builtin.apt:
+        name: mariadb-server
+        state: present
+
+    - name: Arrancar y habilitar MariaDB
+      ansible.builtin.service:
+        name: mariadb # Verifica si debe ser 'mysql'
+        state: started
+        enabled: yes
+
+    - name: Instalar PHP y módulos necesarios
+      ansible.builtin.apt:
+        name:
+          - php
+          - php-mysql
+          - libapache2-mod-php
+        state: present
+
+    - name: Crear un fichero phpinfo.php
+      ansible.builtin.copy:
+        content: |-
+          <?php
+              phpinfo();
+          ?>
+        dest: /var/www/html/phpinfo.php
+        mode: 0644
+        owner: www-data
+        group: www-data
+
+    - name: Reiniciar Apache para aplicar cambios de PHP
+      ansible.builtin.service:
+        name: apache2
+        state: restarted

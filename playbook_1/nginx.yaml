@@ -1,0 +1,55 @@
+---
+- name: Primer play del curso
+  hosts: Servidores_de_App
+
+  tasks:
+    - name: Hacer ping
+      ansible.builtin.ping:
+
+    - name: Crear fichero
+      ansible.builtin.shell: touch /tmp/fichero1.txt
+
+- name: Instalar Nginx
+  hosts: debian
+  become: yes # Se requieren privilegios elevados
+
+  tasks:
+    - name: Parar apache
+      ansible.builtin.service:
+        name: apache2
+        state: stopped
+
+    - name: Instalar Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true # Corregido el nombre del parámetro
+
+    - name: Asegurar que Nginx está activo
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Realizar backup del index.html existente
+      ansible.builtin.copy:
+        src: /var/www/html/index.html
+        dest: /var/www/html/index.html.bak
+        remote_src: yes
+        owner: root
+        group: root
+        mode: "0644"
+      ignore_errors: yes # Evita fallos si el archivo no existe
+
+    - name: Copiar nuevo index.html
+      ansible.builtin.copy:
+        src: /home/ansible/docker/playbooks/playbook_1/index.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Reiniciar Nginx para aplicar cambios
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

@@ -1,0 +1,9 @@
+debian1
+debian2
+rocky1
+rocky2
+ubuntu1
+mysql1
+mysql2
+tomcat1
+tomcat2

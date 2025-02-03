@@ -1,0 +1,16 @@
+Desactivar la recopilación de FACTS
+Hay veces que no queremos recopilar las variables FACTS, sobre todo si no las necesitamos y tenemos muchos entornos.
+
+Para ello podemo susar la opción "gather_facts=no"
+
+
+
+Ejemplo
+
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: Instalar Apache
+    yum:
+      name: httpd
+      state: present

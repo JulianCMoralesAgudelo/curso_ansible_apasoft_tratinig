@@ -1,0 +1,26 @@
+---
+- name: Variables Registradas
+  hosts: rocky
+  become: yes # Se requieren privilegios de superusuario
+
+  tasks:
+    - name: Realizar la instalación de MySQL
+      ansible.builtin.yum:
+        name: mysql-server
+        state: present
+      register: instalar_mysql # Guarda el resultado en 'instalar_mysql'
+
+    - name: Visualización del resultado de instalar MySQL
+      ansible.builtin.debug:
+        var: instalar_mysql # Muestra la información registrada
+
+    - name: Arrancar MySQL y habilitarlo en el inicio
+      ansible.builtin.service:
+        name: mysqld
+        state: started
+        enabled: yes
+      register: arrancar_mysql
+
+    - name: Visualización del resultado de arrancar MySQL
+      ansible.builtin.debug:
+        var: arrancar_mysql

@@ -1,0 +1,39 @@
+---
+- name: Trabajar con ficheros
+  hosts: rocky
+  vars:
+    fichero: "/tmp/prueba.txt"
+
+  tasks:
+    - name: Crear un fichero
+      file:
+        path: "{{fichero}}"
+        state: "touch"
+
+    - name: Cambiar permisos
+      file:
+        path: "{{fichero}}"
+        owner: ansible
+        group: ansible
+        mode: "0777"
+
+- name: Trabajar con directorios
+  hosts: rocky
+  vars:
+    directorio: "/tmp/directorio"
+
+  tasks:
+    - name: Crear un directorio
+      file:
+        path: "{{directorio}}"
+        state: "directory"
+        mode: "0755"
+    - name: Crear un fichero
+      file:
+        path: "{{directorio}}/p1.txt"
+        state: "touch"
+        mode: "0777"
+    - name: Borrar directorio
+      file:
+        path: "{{directorio}}"
+        state: "absent"

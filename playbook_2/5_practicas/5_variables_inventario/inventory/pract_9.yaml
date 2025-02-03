@@ -1,0 +1,26 @@
+---
+- name: Prueba con Variables del fichero de inventario
+  hosts: rocky1_group, rocky2_group
+
+  tasks:
+    - name: Variable local (definida en la tarea)
+      vars:
+        local: "Variable local 1"
+      debug:
+        msg: "Este valor es local {{ local }}"
+
+    - name: Variable que viene del inventario
+      vars:
+        local: "Variable local 2"
+      debug:
+        msg: "Este valor es local {{ local }}"
+
+    - name: Variable que viene del inventario 1 (desde host_vars/rocky1.yml)
+      when: inventory_hostname == 'rocky1'
+      debug:
+        msg: "Este valor es local {{ v1 }}"
+
+    - name: Variable que viene del inventario 2 (desde host_vars/rocky2.yml)
+      when: inventory_hostname == 'rocky2'
+      debug:
+        msg: "Este valor es local {{ v2 }}"

@@ -1,0 +1,20 @@
+---
+- name: Trabajar con usuarios
+  hosts: debian
+  become: yes # Habilita sudo para todas las tareas
+
+  tasks:
+    - name: Crear un usuario simple
+      user:
+        name: userone
+
+    - name: Crear un grupo
+      group:
+        name: groupone
+        state: present
+
+    - name: Crear usuartio en grupo
+      user:
+        name: usertwo
+        group: groupone
+        shell: /bin/bash

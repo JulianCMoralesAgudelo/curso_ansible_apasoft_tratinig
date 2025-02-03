@@ -1,0 +1,9 @@
+---
+- name: Primer play del curso
+  hosts: Servidores_de_App
+
+  tasks:
+  - name: Hacer ping
+    ansible.builtin.ping:
+  - name: Crear fichero
+    ansible.builtin.shell: touch /tmp/fichero1.txt

@@ -1,0 +1,33 @@
+---
+- name: Trabajar con el modulo line in file
+  hosts: ubuntu
+  #became: yes
+
+  tasks:
+    - name: Copiar un fichero
+      copy:
+        src: ejemplo.txt
+        dest: /tmp/ejemplo.txt
+
+    - name: Agregar linea al fichero
+      ansible.builtin.lineinfile:
+        path: /tmp/ejemplo.txt
+        line: Linea 4
+
+    - name: Cambiar linea al fichero
+      ansible.builtin.lineinfile:
+        path: /tmp/ejemplo.txt
+        search_string: Linea 1
+        line: He cambiado la Linea 1
+
+    - name: Cambiar linea al fichero
+      ansible.builtin.lineinfile:
+        path: /tmp/ejemplo.txt
+        search_string: Linea 2
+        state: absent
+
+    - name: Cambiar linea con Regex
+      ansible.builtin.lineinfile:
+        path: /tmp/ejemplo.txt
+        regex: "^Linea 4"
+        line: He cambiado la Linea 4 con Regex

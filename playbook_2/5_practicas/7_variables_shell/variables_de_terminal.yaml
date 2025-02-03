@@ -1,0 +1,11 @@
+---
+- name: Prueba con Extra Variables
+  hosts: rocky
+  tasks:
+    - name: Mostrar valor de var1
+      debug:
+        msg: "El valor de var1 es: {{ var1 }}"
+    
+    - name: Mostrar valor de var2
+      debug:
+        msg: "El valor de var2 es: {{ var2 }}"

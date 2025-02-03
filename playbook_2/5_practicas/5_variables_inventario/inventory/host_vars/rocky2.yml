@@ -1,0 +1,3 @@
+# host_vars/rocky2.yml
+
+v2: "Este valor es local Variable de inventario 2"

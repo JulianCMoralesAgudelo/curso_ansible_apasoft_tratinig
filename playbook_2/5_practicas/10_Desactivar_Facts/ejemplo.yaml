@@ -1,0 +1,8 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: Instalar Apache
+    yum:
+      name: httpd
+      state: present

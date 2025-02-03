@@ -1,0 +1,31 @@
+- name: Ejemplo de variables globales y locales en Ansible
+  hosts: all
+  become: true
+
+  # Definición de variables globales
+  vars:
+    mensaje_global: "Hola desde una variable global"
+    usuario_global: "admin"
+
+  tasks:
+    - name: Mostrar mensaje global
+      debug:
+        msg: "{{ mensaje_global }}"
+
+    - name: Definir una variable local (solo para esta tarea)
+      set_fact:
+        mensaje_local: "Hola desde una variable local"
+
+    - name: Mostrar mensaje local
+      debug:
+        msg: "{{ mensaje_local }}"
+
+    - name: Crear un archivo usando variable global
+      copy:
+        content: "Usuario predeterminado: {{ usuario_global }}"
+        dest: "/tmp/usuario_global.txt"
+
+    - name: Crear un archivo usando variable local
+      copy:
+        content: "Este es un mensaje local: {{ mensaje_local }}"
+        dest: "/tmp/mensaje_local.txt"

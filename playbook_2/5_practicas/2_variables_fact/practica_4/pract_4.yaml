@@ -1,0 +1,7 @@
+---
+- name: Ver el gateway de las máquinas
+  hosts: servidores_de_aplicaciones
+  tasks:
+    - name: Mostrar el gateway de la máquina
+      ansible.builtin.debug:
+        msg: "El gateway de la máquina {{ inventory_hostname }} es {{ ansible_facts.default_ipv4.gateway }}"

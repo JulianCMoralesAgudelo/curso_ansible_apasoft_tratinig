@@ -1,0 +1,21 @@
+---
+- name: Trabajar con el modulo line in file
+  hosts: ubuntu
+
+  tasks:
+    - name: Crear una variable
+      set_fact:
+        fichero: desarollo.txt
+
+    - name: Crear fichero en la maquina
+      ansible.builtin.file:
+        path: /tmp/{{fichero}}
+        state: touch
+
+    - name: Crear una variable de una expresion
+      ansible.builtin.set_fact:
+        nombre: "{{ansible_facts['hostname'] | upper }}"
+
+    - name: Visualizar variable
+      ansible.builtin.debug:
+        msg: El nombre en mayusculas es {{nombre}}

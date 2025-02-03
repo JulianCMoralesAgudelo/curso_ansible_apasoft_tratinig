@@ -1,0 +1,50 @@
+# 1- Copiar el script de respaldo de bases de datos del sistema
+# 2- Copiar el script de parchado
+# 3- Copiar el archivo del parche al servidor Windows
+# 4- Ejecutar el script de backup de bases de datos del sistema
+# 5- Ejecutar la instalación del parche de SQL Server
+# 6- Revisar los últimos registros del log de instalación
+# 7- Mostrar los últimos registros del log en la salida de Ansible
+
+- name: Instalar parche SQL Server
+  hosts: windows
+  tasks:
+    - name: Copiar archivo de backup
+      win_copy:
+        src: backup_system_db.ps1
+        dest: 'C:\Users\admindb\Documents\parches\backup_system_db.ps1'
+
+    - name: Copiar archivo de parchado
+      win_copy:
+        src: sql_server_patch.ps1
+        dest: 'C:\Users\admindb\Documents\parches\sql_server_patch.ps1'
+
+    - name: Copiar parche de archivo local a Windows Server
+      win_copy:
+        src: sqlserver2019-kb5049235-x64_a17df28b9f89ec829ef865add26d75b4958ec802.exe
+        dest: C:\Users\admindb\Documents\parches\sqlserver2019-kb5049235-x64_a17df28b9f89ec829ef865add26d75b4958ec802.exe
+
+    - name: Ejecutar script de backup de bases de datos del sistema
+      win_shell: >
+        powershell.exe -ExecutionPolicy ByPass -File C:\Users\admindb\Documents\parches\backup_system_db.ps1 |
+        Out-File -Append -Encoding utf8 C:\Users\admindb\Documents\parches\parche_log.txt
+      register: backup_result
+      failed_when: backup_result.rc != 0
+
+    - name: Ejecutar instalación de parche de SQL Server
+      win_shell: >
+        C:\Users\admindb\Documents\parches\sqlserver2019-kb5049235-x64_a17df28b9f89ec829ef865add26d75b4958ec802.exe
+        /q /action=patch /allinstances /IAcceptSQLServerLicenseTerms |
+        Out-File -Append -Encoding utf8 C:\Users\admindb\Documents\parches\parche_log.txt
+      register: patch_result
+      failed_when: patch_result.rc != 0
+
+    - name: Revisar el log de instalación de SQL Server
+      win_shell: >
+        Get-Content "C:\Users\admindb\Documents\parches\parche_log.txt" -Tail 10
+      register: patch_log
+      failed_when: false
+
+    - name: Mostrar los últimos registros del log del parche
+      debug:
+        msg: "Últimos registros del log de la instalación: {{ patch_log.stdout }}"

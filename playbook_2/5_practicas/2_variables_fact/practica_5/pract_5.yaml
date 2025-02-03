@@ -1,0 +1,7 @@
+---
+- name: Ver el gateway de las máquinas
+  hosts: servidores_de_aplicaciones
+  tasks:
+    - name: Ver los dos primeros procesadores
+      ansible.builtin.debug:
+        msg: "Los dos primeros procesadores son {{ ansible_facts['processor'][0:2] }}"

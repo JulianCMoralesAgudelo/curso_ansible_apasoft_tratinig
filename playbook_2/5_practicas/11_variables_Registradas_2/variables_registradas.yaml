@@ -1,0 +1,17 @@
+---
+- name: Prueba con variables resgistradas
+  hosts: rocky1
+
+  tasks:
+    - name: Capturar fecha
+      shell:
+        cmd: date
+      register: fecha
+
+    - name: Visualizar fecha
+      ansible.builtin.debug:
+        var: fecha.stdout
+
+    - name: Visualizar fecha
+      ansible.builtin.debug:
+        msg: "{{fecha.stdout}}"

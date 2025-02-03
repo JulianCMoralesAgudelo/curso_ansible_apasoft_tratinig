@@ -1,0 +1,8 @@
+---
+- name: Variables FACT
+  hosts: servidores_de_aplicaciones
+
+  tasks:
+    - name: Ver la memoria de la máquina
+      ansible.builtin.debug:
+        msg: "La memoria es {{ansible_facts['memfree_mb']}}"
