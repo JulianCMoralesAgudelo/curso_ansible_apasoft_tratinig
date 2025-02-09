@@ -1,6 +1,9 @@
 # Establecer configuracion de seguridad
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
 
+# Obtener nombre de dominio
+wmic computersystem get domain
+
 # Remove the auto logon.
 $reg_winlogon_path = "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon"
 Set-ItemProperty -Path $reg_winlogon_path -Name AutoAdminLogon -Value 0
@@ -65,6 +68,7 @@ Stop-Service -Name winrm
 
 # Habilitar en el firewall
 netsh advfirewall firewall add rule name="WinRM HTTP" dir=in action=allow protocol=TCP localport=5985
+New-NetFirewallRule -DisplayName "WinRM HTTPS" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 5986
 
 # Verificar desde otra maquina
 Test-WsMan <IP_DEL_SERVIDOR>
