@@ -1,0 +1,15 @@
+---
+- name: Desinstalar Git en Windows
+  hosts: windows
+  gather_facts: no
+  tasks:
+    - name: Ejecutar el desinstalador de Git
+      ansible.windows.win_command:
+        cmd: '"C:\Program Files\Git\unins000.exe" /VERYSILENT /NORESTART'
+      args:
+        removes: 'C:\Program Files\Git\git.exe'
+
+    - name: Eliminar carpeta residual de Git
+      ansible.windows.win_file:
+        path: 'C:\Program Files\Git'
+        state: absent

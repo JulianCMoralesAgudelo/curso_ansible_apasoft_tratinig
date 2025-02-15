@@ -1,0 +1,24 @@
+---
+- name: Instalar Git en Windows desde URL
+  hosts: windows
+  tasks:
+    - name: Crear carpeta de descargas si no existe
+      ansible.windows.win_file:
+        path: C:\Users\admindb\Downloads
+        state: directory
+
+    - name: Descargar Git
+      ansible.windows.win_get_url:
+        url: https://github.com/git-for-windows/git/releases/download/v2.47.1.windows.2/Git-2.47.1.2-64-bit.exe
+        dest: C:\Users\admindb\Downloads\git.exe
+
+    - name: Instalar Git
+      ansible.windows.win_package:
+        path: C:\Users\admindb\Downloads\git.exe
+        state: present
+        arguments: "/VERYSILENT /NORESTART"
+
+    - name: Eliminar el instalador de Git (opcional)
+      ansible.windows.win_file:
+        path: C:\Users\admindb\Downloads\git.exe
+        state: absent

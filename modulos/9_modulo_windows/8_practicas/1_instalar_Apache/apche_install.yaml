@@ -1,0 +1,128 @@
+---
+- name: Instalar Apache 2.4.54 y Visual C++ Redistributable x64 en Windows Server 2016
+  hosts: windows
+  become: yes
+  become_method: runas
+  become_user: Administrator
+
+  vars:
+    # 📌 Visual C++ Redistributable 64 bits
+    vcredist_x64_url: "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+    vcredist_x64_path: "C:\\Users\\admindb\\Downloads\\vc_redist.x64.exe"
+
+    # 📌 Apache 2.4.54
+    apache_version: "2.4.54"
+    apache_installer_url: "https://www.apachelounge.com/download/VC15/binaries/httpd-{{ apache_version }}-win64-VC15.zip"
+    apache_zip_path: "C:\\Users\\admindb\\Downloads\\apache.zip"
+    apache_extract_dir: "C:\\Users\\admindb\\Downloads\\apache_temp"
+    apache_install_dir: "C:\\Apache24"
+    apache_conf_dir: "{{ apache_install_dir }}\\conf"
+    apache_conf_path: "{{ apache_conf_dir }}\\httpd.conf"
+    apache_bin_path: "{{ apache_install_dir }}\\bin\\httpd.exe"
+    apache_service_name: "Apache2.4"
+
+  tasks:
+    # 📌 1️⃣ INSTALAR VISUAL C++ REDISTRIBUTABLE (SOLO x64)
+    - name: Descargar Visual C++ Redistributable (x64)
+      ansible.windows.win_get_url:
+        url: "{{ vcredist_x64_url }}"
+        dest: "{{ vcredist_x64_path }}"
+
+    - name: Instalar Visual C++ Redistributable (x64)
+      ansible.windows.win_package:
+        path: "{{ vcredist_x64_path }}"
+        state: present
+        arguments: "/quiet /norestart"
+
+    # 📌 2️⃣ DESCARGAR Y EXTRAER APACHE
+    - name: Descargar Apache 2.4.54 (64 bits) desde Apache Lounge
+      ansible.windows.win_get_url:
+        url: "{{ apache_installer_url }}"
+        dest: "{{ apache_zip_path }}"
+
+    - name: Descomprimir Apache en carpeta temporal (Descargas)
+      community.windows.win_unzip:
+        src: "{{ apache_zip_path }}"
+        dest: "{{ apache_extract_dir }}"
+        creates: "{{ apache_extract_dir }}\\Apache24\\bin\\httpd.exe"
+
+    # 📌 3️⃣ VERIFICAR Y MOVER APACHE A `C:\Apache24`
+    - name: Verificar si Apache ya está instalado en `C:\Apache24`
+      ansible.windows.win_stat:
+        path: "{{ apache_install_dir }}"
+      register: apache_installed
+
+    - name: Eliminar `C:\Apache24` si ya existe
+      ansible.windows.win_shell: |
+        Remove-Item -Path "{{ apache_install_dir }}" -Recurse -Force
+      when: apache_installed.stat.exists
+
+    - name: Verificar si la carpeta extraída de Apache existe
+      ansible.windows.win_stat:
+        path: "{{ apache_extract_dir }}\\Apache24"
+      register: extracted_apache
+
+    - name: Mostrar ruta encontrada después de extraer Apache
+      ansible.builtin.debug:
+        var: extracted_apache.stat.exists
+
+    - name: Mover Apache a `C:\Apache24`
+      ansible.windows.win_shell: |
+        Move-Item -Path "{{ apache_extract_dir }}\\Apache24" -Destination "{{ apache_install_dir }}" -Force
+      when: extracted_apache.stat.exists
+
+    - name: Verificar si `C:\Apache24\bin` existe después de mover
+      ansible.windows.win_stat:
+        path: "{{ apache_install_dir }}\\bin"
+      register: apache_bin_folder
+
+    - name: Mostrar resultado de la verificación de `C:\Apache24\bin`
+      ansible.builtin.debug:
+        var: apache_bin_folder.stat.exists
+
+    # 📌 4️⃣ CONFIGURAR APACHE
+    - name: Verificar si httpd.conf existe
+      ansible.windows.win_stat:
+        path: "{{ apache_conf_path }}"
+      register: httpd_conf_status
+
+    - name: Modificar configuración de Apache en httpd.conf
+      community.windows.win_lineinfile:
+        path: "{{ apache_conf_path }}"
+        regex: "^ServerAdmin "
+        line: "ServerAdmin admin@miempresa.com"
+      when: httpd_conf_status.stat.exists
+
+    # 📌 5️⃣ REGISTRAR APACHE COMO SERVICIO (ANTES DE VERIFICAR)
+    - name: Registrar Apache como servicio en Windows
+      ansible.windows.win_shell: |
+        cmd.exe /c ""{{ apache_bin_path }}"" -k install -n "{{ apache_service_name }}"
+      args:
+        chdir: "{{ apache_install_dir }}\\bin"
+      when: apache_bin_folder.stat.exists
+
+    # 📌 6️⃣ VERIFICAR CONFIGURACIÓN DE APACHE
+    - name: Verificar configuración de Apache después del registro
+      ansible.windows.win_shell: |
+        cmd.exe /c ""{{ apache_bin_path }}"" -n "{{ apache_service_name }}" -t
+      args:
+        chdir: "{{ apache_install_dir }}\\bin"
+      when: apache_bin_folder.stat.exists
+
+    # 📌 7️⃣ INICIAR EL SERVICIO APACHE SI ESTÁ REGISTRADO
+    - name: Verificar si el servicio Apache está registrado
+      ansible.windows.win_shell: |
+        sc query "{{ apache_service_name }}"
+      register: apache_service_status
+      ignore_errors: yes
+
+    - name: Mostrar estado del servicio Apache
+      ansible.builtin.debug:
+        var: apache_service_status.stdout_lines
+
+    - name: Iniciar Apache si está registrado
+      ansible.windows.win_service:
+        name: "{{ apache_service_name }}"
+        state: started
+        start_mode: auto
+      when: "'1060' not in apache_service_status.stdout"

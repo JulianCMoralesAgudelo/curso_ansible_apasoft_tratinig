@@ -1,0 +1,13 @@
+---
+- name: Trabajar con windows. Variables FACT
+  hosts: windows
+  
+  tasks:
+
+  - name: Distribución
+    debug:
+      var:  ansible_facts['distribution']
+  
+  - name: Memoeira libre
+    debug:
+      var:  ansible_facts['memfree_mb']

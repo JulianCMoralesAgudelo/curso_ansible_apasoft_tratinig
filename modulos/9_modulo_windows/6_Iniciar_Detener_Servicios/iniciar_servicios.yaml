@@ -1,0 +1,19 @@
+---
+- name: Manejar servicios
+  hosts: windows
+
+  tasks:
+    - name: Iniciar SQL_SERVICE
+      ansible.windows.win_service:
+        name: MSSQL$SQL_SERVER_DEV
+        state: started
+
+    - name: Iniciar SQLAgent
+      ansible.windows.win_service:
+        name: SQLAgent$SQL_SERVER_DEV
+        state: started
+
+    - name: Iniciar SQL_BROWSER
+      ansible.windows.win_service:
+        name: SQLBrowser
+        state: started

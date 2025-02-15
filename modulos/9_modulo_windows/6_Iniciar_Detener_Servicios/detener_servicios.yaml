@@ -1,0 +1,19 @@
+---
+- name: Manejar servicios
+  hosts: windows
+
+  tasks:
+    - name: Detener SQL_SERVICE
+      ansible.windows.win_service:
+        name: MSSQL$SQL_SERVER_DEV
+        state: stopped
+
+    - name: Detener SQLAgent
+      ansible.windows.win_service:
+        name: SQLAgent$SQL_SERVER_DEV
+        state: stopped
+
+    - name: Detener SQL_BROWSER
+      ansible.windows.win_service:
+        name: SQLBrowser
+        state: stopped

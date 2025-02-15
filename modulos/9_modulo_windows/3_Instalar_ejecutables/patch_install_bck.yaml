@@ -1,11 +1,4 @@
-# 1- Copiar el script de respaldo de bases de datos del sistema
-# 2- Copiar el script de parchado
-# 3- Copiar el archivo del parche al servidor Windows
-# 4- Ejecutar el script de backup de bases de datos del sistema
-# 5- Ejecutar la instalación del parche de SQL Server
-# 6- Revisar los últimos registros del log de instalación
-# 7- Mostrar los últimos registros del log en la salida de Ansible
-
+---
 - name: Instalar parche SQL Server
   hosts: windows
   tasks:
